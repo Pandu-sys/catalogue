@@ -55,7 +55,6 @@ pipeline {
                    }
                 }
             }
-        }
         stage('Deploy') {
             when {
                 // Evaluates the boolean parameter directly
@@ -89,6 +88,7 @@ pipeline {
         failure { 
             echo 'I will Run when it is failed'
         }
+    }
 }
 
 
