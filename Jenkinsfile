@@ -31,11 +31,11 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        stage('Install Dependecies') {
             steps {
                 script {
                     sh """
-                        echo "Version: ${appVersion}"
+                        npm install
                     """
                 } 
             }
