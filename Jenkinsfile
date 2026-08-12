@@ -89,7 +89,7 @@ pipeline {
         failure { 
             echo 'I will Run when it is failed'
         }
-    }
-} 
+}
+
 
  
