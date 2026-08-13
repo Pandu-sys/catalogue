@@ -46,7 +46,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 // 'My SonarQube Server' must match the name configured in Jenkins System settings
-                withSonarQubeEnv('sonar server') {
+                withSonarQubeEnv('sonar-server') {
                     sh "${tool 'sonar-8'}/bin/sonar-scanner"
                 }
             }
