@@ -10,7 +10,7 @@ WORKDIR /app
 EXPOSE 8080
 ENV MONGO="true" \
     MONGO_URL="mongodb://mongodb:27017/catalogue" 
-RUN apk update && apk upgrade --no-cahce && \
+RUN apk update && apk upgrade --no-cache && \
     addgroup -S roboshop && adduser -S -G roboshop roboshop && \
     chown -R roboshop:roboshop /app
 COPY --from=builder /app /app
