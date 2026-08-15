@@ -125,14 +125,14 @@ pipeline {
                     def dockerfileScan = sh(
                         script: """
                             trivy config --exit-code 1 --severity HIGH, CRITICAL --format table ./Dockerfile
-                        """
+                        """,
                         returnStatus: true
                     )
 
                     def imageScan = sh(
                         script: """
                             trivy image --scanners vuln --pkg-types os --exit-code 1 --severity HIGH, CRITICAL --format table ${IMAGE_NAME}:${IMAGE_VERSION}
-                        """
+                        """,
                         returnStatus: true
                     )
 
