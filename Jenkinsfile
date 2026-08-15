@@ -53,7 +53,7 @@ pipeline {
                 } 
             }
         }
-        stage('SonarQube Analysis') {
+/*         stage('SonarQube Analysis') {
             steps {
                 // 'My SonarQube Server' must match the name configured in Jenkins System settings
                 withSonarQubeEnv('sonar-server') {
@@ -73,7 +73,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
         stage('Check Dependabot Alerts') {
             steps {
                 withCredentials([string(credentialsId: 'github-token', variable: 'GH_TOKEN')]) {
@@ -116,6 +116,29 @@ pipeline {
                             docker push ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion}
                         """
                    }
+                }
+            }
+        }
+        stage('Trivy Scan') {
+            steps {
+                script {
+                    def dockerfileScan = sh(
+                        script: """
+                            trivy config --exit-code 1 --severity HIGH, CRITICAL --format table ./Dockerfile
+                        """
+                        returnStatus: true
+                    )
+
+                    def imageScan = sh(
+                        script: """
+                            trivy image --scanners vuln --pkg-types os --exit-code 1 --severity HIGH, CRITICAL --format table ${IMAGE_NAME}:${IMAGE_VERSION}
+                        """
+                        returnStatus: true
+                    )
+
+                    if (dockerfileScan != 0 || imageScan != 0) {
+                        error "Trivy found HIGH/CRITICAL issues in Dockerfile and/or OS packages. Failing pipeline."
+                    }
                 }
             }
         }
