@@ -113,7 +113,6 @@ pipeline {
                         sh """
                             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${acc_id}.dkr.ecr.us-east-1.amazonaws.com
                             docker build -t ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion} .
-                            docker push ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion}
                         """
                    }
                 }
@@ -131,7 +130,7 @@ pipeline {
 
                     def imageScan = sh(
                         script: """
-                            trivy image --scanners vuln --pkg-types os --exit-code 1 --severity HIGH, CRITICAL --format table ${IMAGE_NAME}:${IMAGE_VERSION}
+                            trivy image --scanners vuln --pkg-types os --exit-code 1 --severity HIGH, CRITICAL --format table ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion}
                         """,
                         returnStatus: true
                     )
@@ -139,6 +138,18 @@ pipeline {
                     if (dockerfileScan != 0 || imageScan != 0) {
                         error "Trivy found HIGH/CRITICAL issues in Dockerfile and/or OS packages. Failing pipeline."
                     }
+                }
+            }
+        }
+        stage('Ecr Image Push') {
+            steps {
+                script {
+                     withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                        sh """
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${acc_id}.dkr.ecr.us-east-1.amazonaws.com
+                            docker push ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion}
+                        """
+                   }
                 }
             }
         }
