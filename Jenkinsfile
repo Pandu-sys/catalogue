@@ -141,7 +141,7 @@ pipeline {
                 }
             }
         }
-        stage('Ecr Image Push') {
+        stage('ECR Image Push') {
             steps {
                 script {
                      withAWS(credentials: 'aws-creds', region: 'us-east-1') {
