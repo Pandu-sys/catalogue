@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalogue
+  namespace: {{ .Values.namespace }}
+  # these are the labels related to deployment resource
+  labels:
+    project: roboshop
+    tier: backend
+    component: catalogue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: roboshop
+      tier: backend
+      component: catalogue
+  template:
+    metadata:
+      labels:
+        project: roboshop
+        tier: backend
+        component: catalogue
+    spec:
+      containers:
+      - name: mongodb
+        image: "{{ .Values.deployment.imageRepo }}:{{ .Values.deployment.imageVersion }}"
+        resources:
+          requests: 
+             cpu: "1000m"
+             memory: "128Mi"
+          limits: 
+           cpu: "1000m"
+           memory: "128Mi"
+        envFrom:
+        - configMapRef:
+            name: catalogue
